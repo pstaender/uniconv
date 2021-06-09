@@ -19,9 +19,9 @@ const argv = options._unknown || [];
 const verbosity = options.verbose ? 1 : options.vv ? 2 : 0;
 
 let welcomeScreen = `
-╔══════════════╗
-║ uniconv v0.1 ║
-╚══════════════╝`;
+╔════════════════╗
+║ uniconv v0.0.3 ║
+╚════════════════╝`;
 
 console.log(`${welcomeScreen.trim()}`);
 
