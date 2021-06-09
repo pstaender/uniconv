@@ -8,16 +8,22 @@ class Converter
     public static function commands(string $fileDir, string $from, string $to, \Converter\ConverterInterface $converter)
     {
         $dockerImageName = preg_replace('/[^a-zA-Z0-9]+/', '_', strtolower($converter::class));
-        $dockerFileName = sys_get_temp_dir() . '/Dockerfile_' . $dockerImageName;
+        $tmpDir = sys_get_temp_dir() . "/{$from}_{$to}_".time();
+        $scriptFileFolder = $tmpDir . '/script';
+        mkdir($scriptFileFolder, recursive: true);
+        $dockerFileName = $tmpDir . '/Dockerfile_' . $dockerImageName;
         file_put_contents($dockerFileName, $converter->dockerFile());
         $source = "/convertfiles/source.$from";
         $target = "/convertfiles/target.$to";
         $baseDir = realpath(__DIR__ . '/..');
         $logs = " > $baseDir/$fileDir/stdout.log 2> $baseDir/$fileDir/stderr.log";
 
+        $scriptContent = "#!/bin/sh\n".$converter->convertCommand($source, $target);
+        file_put_contents($scriptFileFolder.'/script.sh', $scriptContent);
+
         $commands = [
             "docker build -t $dockerImageName - < $dockerFileName",
-            "docker run -it -v '$baseDir/$fileDir:/convertfiles/' $dockerImageName " . $converter->convertCommand($source, $target) . $logs,
+            "docker run -it -v '$baseDir/$fileDir:/convertfiles/' -v '$scriptFileFolder/:/convertscript/' $dockerImageName sh /convertscript/script.sh" . $logs,
         ];
 
         return $commands;
@@ -25,7 +31,6 @@ class Converter
 
     public static function createFromRequestParameters(string $fromExtension, string $toExtension, Controller $controller)
     {
-        // $converterClass = self::converterClassName($fromExtension, $toExtension);
         $args = self::createConvertArguments($fromExtension, $toExtension, $controller);
         return self::create($fromExtension, $toExtension, $args);
     }
@@ -63,16 +68,23 @@ class Converter
 
     private static function converterClassName(string $fromExtension, string $toExtension): string
     {
-        $converterClass = implode('', [
+        $converterClass = null;
+        $baseNamespaces = [
             '\\Converter\\',
-            ucfirst(strtolower($fromExtension)),
-            'To',
-            ucfirst(strtolower($toExtension)),
-        ]);
-        if (!class_exists($converterClass)) {
-            throw new \App\ConverterClassNotFound("$converterClass class does not exists");
+        ];
+        $baseNamespaces = array_merge(config()['converterNamespaces'], $baseNamespaces);
+        foreach($baseNamespaces as $baseNamespace) {
+            $converterClass = implode('', [
+                $baseNamespace,
+                ucfirst(strtolower($fromExtension)),
+                'To',
+                ucfirst(strtolower($toExtension)),
+            ]);
+            if (class_exists($converterClass)) {
+                return $converterClass;
+            }
         }
-        return $converterClass;
+        throw new \App\ConverterClassNotFound("No matching converter class found");
     }
 
     public static function create(string $fromExtension, string $toExtension, array $options = [])

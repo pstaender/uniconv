@@ -18,12 +18,9 @@ const baseURL = process.env["CONVERTER_BASEURL"] || "http://127.0.0.1:8080";
 const argv = options._unknown || [];
 const verbosity = options.verbose ? 1 : options.vv ? 2 : 0;
 
-let welcomeScreen = `
-╔════════════════╗
-║ uniconv v0.0.3 ║
-╚════════════════╝`;
+const packageJson = require('./package.json');
 
-console.log(`${welcomeScreen.trim()}`);
+console.log(`uniconv v${packageJson.version}`);
 
 const log = (msg, icon = "➡️", writer = null) => {
   let output =
@@ -173,7 +170,13 @@ const convertFile = async (
       processing: "⚙️",
       done: "📦",
     };
+
+    if (!res.data.status) {
+      displayErrorMessageAndExit('No conversion status available… Please try again. Exiting now');
+    }
+
     log(res.data.status, statusIcon[res.data.status], "process.stdout.write");
+
     if (res.data.status === "done") {
       // download file
       clearInterval(intervalID);
@@ -204,7 +207,7 @@ const convertFile = async (
       "/" +
       require("path")
         .basename(file)
-        .replace(/\.([^\.])+$/, "$1") +
+        .replace(/\.([^\.]+?)$/, "") +
       "." +
       targetFormat.toLowerCase();
     if (fs.existsSync(targetFile)) {

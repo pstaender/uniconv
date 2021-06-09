@@ -56,8 +56,10 @@ class ConversionController extends Controller
         } catch (ConverterClassNotFound $e) {
             Helper::deleteConversion(username: $this->username(), id: $id, force: true);
             $this->sendErrorMessage("Converting from $extension to $toExtension is not supported", 501);
+        } catch (\Exception $e) {
+            Helper::deleteConversion(username: $this->username(), id: $id, force: true);
+            throw $e;
         }
-
 
         // store job file, i.e. queue job
         file_put_contents($file['jobfile'], json_encode([
@@ -107,6 +109,9 @@ class ConversionController extends Controller
             $f['filepath'] = Helper::conversionFolder($this->username(), $id . '/source.' . $f['extension']);
             if (!file_exists(dirname($f['filepath']))) {
                 mkdir(dirname($f['filepath']), recursive: true);
+            }
+            if (!file_exists(dirname($f['jobfile']))) {
+                mkdir(dirname($f['jobfile']), recursive: true);
             }
             if (file_exists($f['filepath']) && filesize($f['filepath']) > 0) {
                 $url = Helper::statusUrlForConversion($this->username(), $id);

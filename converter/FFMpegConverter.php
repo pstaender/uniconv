@@ -7,7 +7,7 @@ class FFMpegConverter implements ConverterInterface
 
   public function convertCommand(string $sourceFile, string $targetFile): ?string
   {
-    $cmd = "ffmpeg -i $sourceFile -vn $targetFile";
+    $cmd = "ffmpeg -i $sourceFile $targetFile";
     return $cmd;
   }
   public function dockerFile(): ?string
@@ -18,5 +18,10 @@ class FFMpegConverter implements ConverterInterface
   public static function allowConstructParametersFromRequest(): bool
   {
     return false;
+  }
+
+  protected function mp3AudioQuality()
+  {
+    return '192k';
   }
 }

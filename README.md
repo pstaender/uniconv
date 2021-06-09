@@ -4,12 +4,16 @@ A universal converter that converts everything that can be run inside a docker c
 
 The service converts a file to other formats… as long as they are defined. You can define formats via PHP classes and Docker definitions.
 
-### Example implementations
+### Supported Conversions
 
-- ffmpeg
-  - mkv -> mp3
+- via ffmpeg
   - mp4 -> mp3
-- tesseract
+  - mkv -> mp3
+  - mkv -> wav
+  - mkv -> flac
+  - mp3 -> flac
+  - wav -> flac
+- via tesseract
   - jpg -> pdf
 
 ### Features
@@ -25,11 +29,12 @@ The service converts a file to other formats… as long as they are defined. You
 - Docker
 - optional: nodejs (for the terminal client)
 
-### Build
+### Setup
 
 ```sh
+  $ git clone git@github.com:pstaender/uniconv.git
+  $ cd uniconv
   $ composer install
-  $ cd client && npm install # optional
 ```
 
 ### Define your accesstoken(s)
@@ -47,7 +52,23 @@ users:
 
 You can now use the accestoken in the header like: `Authorization: Bearer 933704aabab8314e7cd2385428591eda737fecec`
 
-### Service setup
+### Uniconv FTW
+
+You can use directly the restful api of the conversion service (open api specs will follow soon).
+
+But the easiest way for now is to install and use the uniconv cli tool (see https://github.com/pstaender/uniconv/tree/main/client). The usage is pretty straightforward:
+
+```sh
+$ uniconv flac /Users/philipp/Downloads/music.mkv
+uniconv
+
+🗳	11:15:39 PM: queued
+⚙️	11:15:47 PM: processing
+📦	11:15:49 PM: done
+🦄	11:15:50 PM: Downloaded to -> /Users/philipp/Downloads/music.flac
+```
+
+### Start service and job worker
 
 Run server:
 

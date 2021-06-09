@@ -2,12 +2,12 @@
 
 namespace Converter;
 
-class Mp4ToMp3 extends FFMpegConverter
+class FlacToMp3 extends FFMpegConverter
 {
   public function convertCommand(string $sourceFile, string $targetFile): ?string
   {
     $quality = '-b:a ' . $this->mp3AudioQuality();
-    $cmd = "ffmpeg -i $sourceFile $quality -vn $targetFile";
+    $cmd = "ffmpeg -i $sourceFile $quality $targetFile";
     return $cmd;
   }
 }
