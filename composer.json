@@ -1,0 +1,30 @@
+{
+    "name": "pstaender/converter",
+    "authors": [
+        {
+            "name": "Philipp Staender",
+            "email": "pstaender@mailbox.org"
+        }
+    ],
+    "scripts": {
+        "start": [
+            "@php -S 127.0.0.1:8080 index.php"
+        ],
+        "convert": [
+            "@php convert_jobs.php"
+        ]
+    },
+    "autoload": {
+        "psr-4": {
+            "Converter\\": "converter/",
+            "App\\": "app/"
+        }
+    },
+    "require": {
+        "larapack/dd": "1.*",
+        "qxsch/worker-pool": "^1.7",
+        "fileeye/mimemap": "^1.1",
+        "filp/whoops": "^2.13",
+        "symfony/yaml": "^5.3"
+    }
+}

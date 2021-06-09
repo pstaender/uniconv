@@ -1,0 +1,25 @@
+{
+  "name": "uniconv",
+  "version": "0.0.1",
+  "description": "uniconv is a cli tool to convert various files from one format to another via the uniconv server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "pstaender@mailbox.org",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pstaender/uniconv.git"
+  },
+  "bin": {
+    "uniconv": "index.js"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "command-line-args": "^5.1.1",
+    "command-line-usage": "^6.1.1",
+    "form-data": "^4.0.0",
+    "got": "^11.8.2"
+  }
+}

@@ -1,0 +1,1 @@
+FROM alfg/ffmpeg:latest

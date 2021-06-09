@@ -1,0 +1,4 @@
+/files/*
+/jobs/*
+/vendor/*
+/config/config.local.yml
