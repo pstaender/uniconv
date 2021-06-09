@@ -68,11 +68,11 @@ const showHelp = () => {
       header: "Synopsis",
       content: [
         {
-          desc: "$ convert $targetFileExtension $file",
+          desc: "$ uniconv $targetFileExtension $file",
           example: "",
         },
         {
-          desc: "$ convert mp3 myvideo.mp4",
+          desc: "$ uniconv mp3 myvideo.mp4",
           example: "Converts mp4 video to mp3 audio",
         },
       ],
