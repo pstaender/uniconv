@@ -1,0 +1,31 @@
+FROM thecodingmachine/php:8.0-v4-cli
+
+# install docker
+RUN sudo apt update && \
+    sudo apt upgrade -y
+RUN curl -sSL https://get.docker.com/ | sh
+# RUN sudo apt install -y \
+#     apt-transport-https \
+#     ca-certificates \
+#     curl \
+#     gnupg \
+#     lsb-release
+# RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+#     sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+# RUN echo \
+#     "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+#     $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+# RUN sudo apt update && \
+#     sudo apt install -y docker-ce docker-ce-cli containerd.io
+
+COPY config/ /usr/src/app/config/
+COPY app/ /usr/src/app/app/
+COPY converter/ /usr/src/app/converter/
+COPY composer.json /usr/src/app/
+COPY composer.lock /usr/src/app/
+COPY worker.sh /usr/src/app/
+COPY convert_jobs.php /usr/src/app/
+
+RUN composer install
+
+CMD ["bash", "./worker.sh"]
