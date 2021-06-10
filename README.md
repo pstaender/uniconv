@@ -68,6 +68,13 @@ uniconv
 🦄	11:15:50 PM: Downloaded to -> /Users/philipp/Downloads/music.flac
 ```
 
+### TODO
+
+  * open api specs (inluding generating class constructor)
+  * make delete file after download to optout instead of optin
+  * change to POST /convert/FROM/TO
+  * handle multipe files input and output (via tar or zip?)
+
 ### Start service and job worker
 
 Run server:

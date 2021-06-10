@@ -28,7 +28,7 @@ $workerPool->setWorkerPoolSize(4)
         $pid = getmypid();
         $pidFile = $jobFile.'.pid';
         if (file_exists($pidFile)) {
-          echo "Skipping '$jobFile' because it's already in process #".trim(file_get_contents($pidFile));
+          echo "Skipping '$jobFile', see pid #".trim(file_get_contents($pidFile));
           return null;
         }
         file_put_contents($pidFile, $pid);
@@ -51,7 +51,7 @@ $workerPool->setWorkerPoolSize(4)
           );
 
           foreach($commands as $cmd) {
-            echo "+++ $cmd";
+            echo "\n\t$ $cmd";
             shell_exec($cmd);
           }
 
@@ -80,4 +80,4 @@ foreach ($jobFiles as $jobFile) {
 
 $workerPool->waitForAllWorkers();
 
-echo "\ndone";
+echo " - done -";

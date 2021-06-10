@@ -15,6 +15,7 @@ function is_debug(): bool
 
 // load config files
 global $config;
+
 $config = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('./config/config.yml'));
 
 $localConfig = "./config/config.local.yml";
@@ -29,12 +30,15 @@ foreach([$localConfig, $hostConfig] as $configFile) {
     }
 }
 
-function config() {
+function config(? string $val = null) {
     global $config;
+    if ($val) {
+        return $config[$val] ?? null;
+    }
     return $config;
 }
 
-$debug = true;
+$debug = config('debug');
 
 if (is_debug()) {
     ini_set('display_errors', 1);
@@ -45,3 +49,12 @@ if (is_debug()) {
     $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
     $whoops->register();
 }
+
+if (isset($_REQUEST['config'])) {
+    dd(config());
+}
+
+// if (config('max_file_upload_size')) {
+//     ini_set('upload_max_filesize', config('max_file_upload_size'));
+//     ini_set('post_max_size', config('max_file_upload_size'));
+// }

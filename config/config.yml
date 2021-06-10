@@ -1,4 +1,3 @@
-converterNamespaces:
-  - \Converter
 user:
   by_authtoken: \App\Users::by_authtoken
+debug: false

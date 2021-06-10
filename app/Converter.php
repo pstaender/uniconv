@@ -7,24 +7,64 @@ class Converter
 {
     public static function commands(string $fileDir, string $from, string $to, \Converter\ConverterInterface $converter)
     {
-        $dockerImageName = preg_replace('/[^a-zA-Z0-9]+/', '_', strtolower($converter::class));
-        $tmpDir = sys_get_temp_dir() . "/{$from}_{$to}_".time();
+        $dockerImageName = 'uniconv_' . preg_replace('/[^a-zA-Z0-9]+/', '_', strtolower($converter::class));
+
+        $tmpDir = sys_get_temp_dir() . "/docker_process_".time();
+        mkdir($tmpDir.'/', recursive: true);
+
+        $dockerFileName = $tmpDir . '/Dockerfile.' . $dockerImageName;
+        file_put_contents($dockerFileName, $converter->dockerFile());
+
         $scriptFileFolder = $tmpDir . '/script';
         mkdir($scriptFileFolder, recursive: true);
-        $dockerFileName = $tmpDir . '/Dockerfile_' . $dockerImageName;
-        file_put_contents($dockerFileName, $converter->dockerFile());
-        $source = "/convertfiles/source.$from";
-        $target = "/convertfiles/target.$to";
-        $baseDir = realpath(__DIR__ . '/..');
-        $logs = " > $baseDir/$fileDir/stdout.log 2> $baseDir/$fileDir/stderr.log";
+
+        $sourceFile = "source.$from";
+        $targetFile = "target.$to";
+
+        $workerIsRunningOnSameEnvironmentAsWebserver = file_exists("$fileDir/$sourceFile");
+
+        // if ($workerIsRunningOnSameEnvironmentAsWebserver) {
+        //     $absoluteFileDir = realpath(__DIR__.'/../'.$fileDir);
+        //
+        //     $source = "$absoluteFileDir/$sourceFile";
+        //     $target = "$absoluteFileDir/$targetFile";
+
+        // } else {
+
+        $outputFolder = '/convertfiles';
+        $source = "$outputFolder/$sourceFile";
+        $target = "$outputFolder/$targetFile";
 
         $scriptContent = "#!/bin/sh\n".$converter->convertCommand($source, $target);
-        file_put_contents($scriptFileFolder.'/script.sh', $scriptContent);
+        $scriptFile = $scriptFileFolder.'/script.sh';
+        file_put_contents($scriptFile, $scriptContent);
 
-        $commands = [
-            "docker build -t $dockerImageName - < $dockerFileName",
-            "docker run -it -v '$baseDir/$fileDir:/convertfiles/' -v '$scriptFileFolder/:/convertscript/' $dockerImageName sh /convertscript/script.sh" . $logs,
-        ];
+        if ($workerIsRunningOnSameEnvironmentAsWebserver) {
+            // worker is running directly on the server
+            $absoluteFileDir = realpath(__DIR__.'/../'.$fileDir);
+            // write logs directly to the output folder
+            $logs = " > $absoluteFileDir/stdout.log 2> $absoluteFileDir/stderr.log";
+            $commands = [
+                "docker build -t $dockerImageName - < $dockerFileName",
+                "docker run -it -v '$absoluteFileDir/:/convertfiles/' -v '$scriptFileFolder/:/convertscript/' $dockerImageName sh /convertscript/script.sh" . $logs,
+            ];
+        } else {
+            // worker is running inside a docker container
+            // write logs to local tmp dir
+            $logs = " > $tmpDir/stdout.log 2> $tmpDir/stderr.log";
+            $commands = [
+                "cp $source $tmpDir/$sourceFile",
+                "cp $scriptFile $tmpDir/script.sh",
+                "docker build -t $dockerImageName - < $dockerFileName",
+                "docker run -it -v '$tmpDir/:/convertfiles/' $dockerImageName sh /convertfiles/script.sh" . $logs,
+                "cp rm $tmpDir/script.sh",
+                "cp $tmpDir/* /convertfiles/",
+                "rm -rf $tmpDir",
+            ];
+        }
+
+        // cleanup tmp dir
+        $commands[] = "rm -rf $tmpDir";
 
         return $commands;
     }
