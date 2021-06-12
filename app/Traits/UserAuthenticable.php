@@ -11,8 +11,8 @@ trait UserAuthenticable
             $token = explode('Bearer ', $token)[1] ?? null;
         }
         if (!empty($token)) {
-            if (\App\config()['user']['by_accesstoken'] ?? null) {
-                $user = call_user_func(\App\config()['user']['by_accesstoken'], $token);
+            if (\App\config('user_by_accesstoken') ?? null) {
+                $user = call_user_func(\App\config('user_by_accesstoken'), $token);
             } else {
                 $user = \App\Users::by_accesstoken($token);
             }

@@ -81,7 +81,7 @@ class ConversionController extends Controller
 
     protected function file(string $toExtension): ?array
     {
-        $file = $this->files[array_keys($this->files)[0] ?? null] ?? null;
+        $file = $this->files()[array_keys($this->files)[0] ?? null] ?? null;
         $f = [];
         if (!isset($file['error'])) {
             throw new InvalidArgumentException('There was a general problem with your file upload. Maybe the upload file size is exceeded.');

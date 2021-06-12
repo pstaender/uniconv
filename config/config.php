@@ -3,7 +3,7 @@
 namespace App;
 
 require_once(__DIR__ . '/../vendor/autoload.php');
-define('ROOT_PATH', realpath(dirname(__DIR__) . '/../'));
+define('ROOT_PATH', realpath(dirname(__DIR__) . '/'));
 
 global $debug;
 
@@ -49,12 +49,3 @@ if (is_debug()) {
     $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
     $whoops->register();
 }
-
-if (isset($_REQUEST['config'])) {
-    dd(config());
-}
-
-// if (config('max_file_upload_size')) {
-//     ini_set('upload_max_filesize', config('max_file_upload_size'));
-//     ini_set('post_max_size', config('max_file_upload_size'));
-// }

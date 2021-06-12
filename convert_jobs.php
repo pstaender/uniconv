@@ -26,9 +26,9 @@ $workerPool->setWorkerPoolSize(4)
        */
       function ($jobFile, $semaphore, $storage) {
         $pid = getmypid();
-        $pidFile = $jobFile.'.pid';
+        $pidFile = $jobFile . '.pid';
         if (file_exists($pidFile)) {
-          echo "Skipping '$jobFile', see pid #".trim(file_get_contents($pidFile));
+          echo "Skipping '$jobFile', see pid #" . trim(file_get_contents($pidFile));
           return null;
         }
         file_put_contents($pidFile, $pid);
@@ -50,22 +50,22 @@ $workerPool->setWorkerPoolSize(4)
             $converter
           );
 
-          foreach($commands as $cmd) {
+          foreach ($commands as $cmd) {
             echo "\n\t$ $cmd";
-            shell_exec($cmd);
+            echo "\n" . shell_exec($cmd);
           }
 
           unlink($pidFile);
-          rename($jobFile, $jobFile.'.done');
+          rename($jobFile, $jobFile . '.done');
         } catch (Exception $e) {
           $whoops = new \Whoops\Run;
           $whoops->allowQuit(false);
           $whoops->writeToOutput(true);
-          $whoops->pushHandler(new \Whoops\Handler\PlainTextHandler );
+          $whoops->pushHandler(new \Whoops\Handler\PlainTextHandler);
           $whoops->handleException($e);
           echo $e->getMessage();
 
-          $exceptionLogfile = App\Helper::conversionFolder($data['user'], $data['id']).'/exception.log';
+          $exceptionLogfile = App\Helper::conversionFolder($data['user'], $data['id']) . '/exception.log';
           file_put_contents($exceptionLogfile, $e->getMessage());
         }
 

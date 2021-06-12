@@ -41,7 +41,7 @@ The service converts a file to other formats… as long as they are defined. You
 
 By default, a simple accesstoken lookup is used.
 
-Create a `config/config.local.yml` file which has the following data:
+Create a `config/config.local.yml` file which has the following data (change the accesstoken with a random custom one):
 
 ```yaml
 users:
