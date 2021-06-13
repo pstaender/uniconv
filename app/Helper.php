@@ -69,7 +69,7 @@ final class Helper
 
         $folder = realpath(__DIR__ . '/../' . Helper::conversionFolder($username, $id));
 
-        if (!file_exists($folder)) {
+        if (!$folder || !file_exists($folder)) {
             throw new NotFoundException('File does not exists');
         }
 
