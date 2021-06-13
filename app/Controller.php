@@ -46,11 +46,6 @@ class Controller
         }
         $urlParts = array_values(array_filter(explode('/', $this->server['REQUEST_URI']), fn($v) => !empty($v)));
         $methodName = $urlParts[1] ?? 'index';
-        // if ($this->requestMethod === 'GET') {
-        //     if (method_exists($this, $methodName)) {
-        //         return $this->$methodName();
-        //     }
-        // }
         $methodName = strtolower($this->requestMethod) . ucfirst($methodName);
         if (method_exists($this, $methodName)) {
             return $this->$methodName();
