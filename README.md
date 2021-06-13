@@ -52,7 +52,7 @@ users:
 
 You can now use the accestoken in the header like: `Authorization: Bearer 933704aabab8314e7cd2385428591eda737fecec`
 
-### Uniconv FTW
+### Uniconv client FTW
 
 You can use directly the restful api of the conversion service (open api specs will follow soon).
 
@@ -70,10 +70,8 @@ uniconv
 
 ### TODO
 
-  * open api specs (inluding generating class constructor)
-  * make delete file after download to optout instead of optin
-  * change to POST /convert/FROM/TO
-  * handle multipe files input and output (via tar or zip?)
+  * open api specs
+  * maybe: handle multiple files input and output
 
 ### Start service and job worker
 
