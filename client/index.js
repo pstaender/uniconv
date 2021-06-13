@@ -211,7 +211,7 @@ const convertFile = async (
       targetFormat.toLowerCase();
     if (fs.existsSync(targetFile)) {
       console.log(`File '${targetFile}' already exists`);
-      process.exit(0);
+      process.exit(1);
     }
     await convertFile(baseURL, accessToken, targetFormat, file, targetFile);
   } catch (e) {
