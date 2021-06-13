@@ -14,7 +14,7 @@ class JpgToPdf extends TesseractConverter
         }
     }
 
-    public function convertCommand(string $sourceFile, string $targetFile):? string
+    public function convertCommand(string $sourceFile, string $targetFile): ?string
     {
         $targetFile = preg_replace('/\\.pdf$/i', '', $targetFile);
         $lang = $this->language;

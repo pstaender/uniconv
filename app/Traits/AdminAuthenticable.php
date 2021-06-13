@@ -2,7 +2,7 @@
 
 namespace App\Traits;
 
-trait UserAuthenticable
+trait AdminAuthenticable
 {
     protected function authorize(): bool
     {
@@ -11,10 +11,10 @@ trait UserAuthenticable
             $token = explode('Bearer ', $token)[1] ?? null;
         }
         if (!empty($token)) {
-            if (\App\config('user_by_accesstoken') ?? null) {
-                $user = call_user_func(\App\config('user_by_accesstoken'), $token);
+            if (\App\config('admin_by_accesstoken') ?? null) {
+                $user = call_user_func(\App\config('admin_by_accesstoken'), $token);
             } else {
-                $user = \App\Users::by_accesstoken($token);
+                $user = \App\Admins::by_accesstoken($token);
             }
             if (!empty($user)) {
                 $this->user = $user;

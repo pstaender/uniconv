@@ -3,7 +3,7 @@
 namespace App;
 
 require_once(__DIR__ . '/../vendor/autoload.php');
-define('ROOT_PATH', realpath(dirname(__DIR__) . '/../'));
+define('ROOT_PATH', realpath(dirname(__DIR__) . '/'));
 
 global $debug;
 
@@ -15,6 +15,7 @@ function is_debug(): bool
 
 // load config files
 global $config;
+
 $config = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('./config/config.yml'));
 
 $localConfig = "./config/config.local.yml";
@@ -29,12 +30,15 @@ foreach([$localConfig, $hostConfig] as $configFile) {
     }
 }
 
-function config() {
+function config(? string $val = null) {
     global $config;
+    if ($val) {
+        return $config[$val] ?? null;
+    }
     return $config;
 }
 
-$debug = true;
+$debug = config('debug');
 
 if (is_debug()) {
     ini_set('display_errors', 1);

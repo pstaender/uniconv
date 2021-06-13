@@ -3,27 +3,46 @@
 declare(strict_types=1);
 
 namespace App;
+
 class Converter
 {
-    public static function commands(string $fileDir, string $from, string $to, \Converter\ConverterInterface $converter)
+    public static function commands(
+        string $fileDir,
+        string $from,
+        string $to,
+        \Converter\ConverterInterface $converter,
+        ?string $shellCommands = null
+    )
     {
-        $dockerImageName = preg_replace('/[^a-zA-Z0-9]+/', '_', strtolower($converter::class));
-        $tmpDir = sys_get_temp_dir() . "/{$from}_{$to}_".time();
-        $scriptFileFolder = $tmpDir . '/script';
-        mkdir($scriptFileFolder, recursive: true);
-        $dockerFileName = $tmpDir . '/Dockerfile_' . $dockerImageName;
-        file_put_contents($dockerFileName, $converter->dockerFile());
-        $source = "/convertfiles/source.$from";
-        $target = "/convertfiles/target.$to";
-        $baseDir = realpath(__DIR__ . '/..');
-        $logs = " > $baseDir/$fileDir/stdout.log 2> $baseDir/$fileDir/stderr.log";
+        $dockerImageName = 'uniconv_' . preg_replace('/[^a-zA-Z0-9]+/', '_', strtolower($converter::class));
 
-        $scriptContent = "#!/bin/sh\n".$converter->convertCommand($source, $target);
-        file_put_contents($scriptFileFolder.'/script.sh', $scriptContent);
+        $tmpDir = sys_get_temp_dir() . "/docker_process_" . time();
+        mkdir($tmpDir . '/', recursive: true);
+
+        $scriptVolume = '';
+
+        if ($shellCommands) {
+            $scriptFileFolder = $tmpDir . '/script';
+            mkdir($scriptFileFolder, recursive: true);
+
+            $scriptContent = Helper::conversionShellScript($converter, $from, $to);
+
+            $scriptFile = $scriptFileFolder . '/script.sh';
+            file_put_contents($scriptFile, $scriptContent);
+            $scriptVolume = "-v '$scriptFileFolder/:/convertscript/'";
+        }
+
+        $absoluteFileDir = realpath(__DIR__ . '/../' . $fileDir);
+
+        $logs = " > $absoluteFileDir/stdout.log 2> $absoluteFileDir/stderr.log";
+
+        $dockerFileName = $absoluteFileDir . '/Dockerfile';
+        file_put_contents($dockerFileName, $converter->dockerFile());
 
         $commands = [
             "docker build -t $dockerImageName - < $dockerFileName",
-            "docker run -it -v '$baseDir/$fileDir:/convertfiles/' -v '$scriptFileFolder/:/convertscript/' $dockerImageName sh /convertscript/script.sh" . $logs,
+            "docker run -t -v '$absoluteFileDir/:/convertfiles/' $scriptVolume $dockerImageName " . (($shellCommands) ? "sh /convertscript/script.sh " : '') . $logs,
+            "rm -rf $tmpDir",
         ];
 
         return $commands;
@@ -51,7 +70,7 @@ class Converter
                     $val = null;
                 }
                 if ($param->isOptional()) {
-                    $paramValue = $controller->param($param->getName(), (string) $param->getType() ?? null);
+                    $paramValue = $controller->param($param->getName(), (string)$param->getType() ?? null);
                     if ($paramValue !== null) {
                         $val = $paramValue;
                     }
@@ -68,12 +87,11 @@ class Converter
 
     private static function converterClassName(string $fromExtension, string $toExtension): string
     {
-        $converterClass = null;
         $baseNamespaces = [
             '\\Converter\\',
         ];
         $baseNamespaces = array_merge(config()['converterNamespaces'], $baseNamespaces);
-        foreach($baseNamespaces as $baseNamespace) {
+        foreach ($baseNamespaces as $baseNamespace) {
             $converterClass = implode('', [
                 $baseNamespace,
                 ucfirst(strtolower($fromExtension)),
@@ -97,5 +115,4 @@ class Converter
             return new $converterClass;
         }
     }
-
 }

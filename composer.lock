@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "643eb4c0d4c0e1defd5da51d7096c9a7",
+    "content-hash": "51a1210ecc477594dce541f1c3073392",
     "packages": [
         {
             "name": "fileeye/mimemap",
@@ -771,7 +771,9 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=8.0"
+    },
     "platform-dev": [],
     "plugin-api-version": "2.0.0"
 }

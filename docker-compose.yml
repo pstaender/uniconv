@@ -1,0 +1,12 @@
+version: "3.0"
+services:
+  web:
+    build: .
+    ports:
+      - "7979:80"
+    volumes:
+      - ./jobs:/var/www/html/jobs
+      - ./files:/var/www/html/files
+    environment:
+      PHP_INI_POST_MAX_SIZE: 120M
+      PHP_INI_UPLOAD_MAX_FILESIZE: 120M

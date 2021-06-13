@@ -1,4 +1,3 @@
-converterNamespaces:
-  - \Converter
-user:
-  by_authtoken: \App\Users::by_authtoken
+user_by_authtoken: \App\Users::by_accesstoken
+admin_by_accesstoken: \App\Admins::by_accesstoken
+debug: false

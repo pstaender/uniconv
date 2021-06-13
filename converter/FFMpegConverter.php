@@ -5,23 +5,24 @@ namespace Converter;
 class FFMpegConverter implements ConverterInterface
 {
 
-  public function convertCommand(string $sourceFile, string $targetFile): ?string
-  {
-    $cmd = "ffmpeg -i $sourceFile $targetFile";
-    return $cmd;
-  }
-  public function dockerFile(): ?string
-  {
-    return file_get_contents(__DIR__ . '/FFMpeg.Dockerfile');
-  }
+    public function convertCommand(string $sourceFile, string $targetFile): ?string
+    {
+        $cmd = "ffmpeg -i $sourceFile $targetFile";
+        return $cmd;
+    }
 
-  public static function allowConstructParametersFromRequest(): bool
-  {
-    return false;
-  }
+    public function dockerFile(): ?string
+    {
+        return file_get_contents(__DIR__ . '/FFMpeg.Dockerfile');
+    }
 
-  protected function mp3AudioQuality()
-  {
-    return '192k';
-  }
+    public static function allowConstructParametersFromRequest(): bool
+    {
+        return false;
+    }
+
+    protected function mp3AudioQuality()
+    {
+        return '192k';
+    }
 }

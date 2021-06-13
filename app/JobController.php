@@ -7,10 +7,10 @@ namespace App;
 class JobController extends Controller
 {
 
-  use Traits\UserAuthenticable;
+    use Traits\UserAuthenticable;
 
-  protected function index()
-  {
+    protected function index()
+    {
 
-  }
+    }
 }

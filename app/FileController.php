@@ -21,10 +21,10 @@ class FileController extends Controller
         ] = $this->getConversionStatusRequiredParams();
 
         if (empty($filename)) {
-            $filename = pathinfo($data['file']['filename'], PATHINFO_FILENAME).'.'.$data['target'];
+            $filename = pathinfo($data['file']['filename'], PATHINFO_FILENAME) . '.' . $data['target'];
         }
 
-        $file = __DIR__.'/../'.Helper::conversionFolder($this->username(), $data['id']).'/target.'.$data['target'];
+        $file = __DIR__ . '/../' . Helper::conversionFolder($this->username(), $data['id']) . '/target.' . $data['target'];
 
         if (!file_exists($file)) {
             $this->sendErrorMessage('File is not converted, yet', 404);
@@ -34,8 +34,8 @@ class FileController extends Controller
 
         $ext = new \FileEye\MimeMap\Extension($data['target']);
         header('Content-Description: File Transfer');
-        header('Content-Type: '.$ext->getDefaultType());
-        header('Content-Disposition: attachment; filename='.$filename);
+        header('Content-Type: ' . $ext->getDefaultType());
+        header('Content-Disposition: attachment; filename=' . $filename);
         header('Content-Transfer-Encoding: binary');
         header('Expires: 0');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -44,7 +44,7 @@ class FileController extends Controller
         ob_clean();
         flush();
         readfile($file);
-        if ($data['deleteAfterDownload'] === true) {
+        if ($data['keepFilesAfterDownload'] !== true) {
             Helper::deleteConversion($this->username(), $id);
         }
         exit();
@@ -59,7 +59,7 @@ class FileController extends Controller
 
     protected function stopsWithErrorMessageIfConversionIsStillInProgress(string $username, string $id)
     {
-        if (file_exists(Helper::jobFile($this->username(), $id).'.pid')) {
+        if (file_exists(Helper::jobFile($this->username(), $id) . '.pid')) {
             $this->sendErrorMessage('Conversion is in progress', 409);
         }
     }

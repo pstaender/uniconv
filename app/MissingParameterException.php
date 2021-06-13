@@ -2,4 +2,6 @@
 
 namespace App;
 
-class MissingParameterException extends \Exception {}
+class MissingParameterException extends \Exception
+{
+}

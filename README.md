@@ -41,7 +41,7 @@ The service converts a file to other formats… as long as they are defined. You
 
 By default, a simple accesstoken lookup is used.
 
-Create a `config/config.local.yml` file which has the following data:
+Create a `config/config.local.yml` file which has the following data (change the accesstoken with a random custom one):
 
 ```yaml
 users:
@@ -52,7 +52,7 @@ users:
 
 You can now use the accestoken in the header like: `Authorization: Bearer 933704aabab8314e7cd2385428591eda737fecec`
 
-### Uniconv FTW
+### Uniconv client FTW
 
 You can use directly the restful api of the conversion service (open api specs will follow soon).
 
@@ -67,6 +67,11 @@ uniconv
 📦	11:15:49 PM: done
 🦄	11:15:50 PM: Downloaded to -> /Users/philipp/Downloads/music.flac
 ```
+
+### TODO
+
+  * open api specs
+  * maybe: handle multiple files input and output
 
 ### Start service and job worker
 

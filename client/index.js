@@ -128,7 +128,6 @@ const convertFile = async (
   const FormData = require("form-data");
 
   const formData = new FormData();
-  formData.append("deleteAfterDownload", "true");
   formData.append("file", fs.createReadStream(file));
   const client = axios.create({
     baseURL: baseURL,
@@ -212,7 +211,7 @@ const convertFile = async (
       targetFormat.toLowerCase();
     if (fs.existsSync(targetFile)) {
       console.log(`File '${targetFile}' already exists`);
-      process.exit(0);
+      process.exit(1);
     }
     await convertFile(baseURL, accessToken, targetFormat, file, targetFile);
   } catch (e) {
