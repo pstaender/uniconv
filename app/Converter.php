@@ -39,8 +39,6 @@ class Converter
         $dockerFileName = $absoluteFileDir . '/Dockerfile';
         file_put_contents($dockerFileName, $converter->dockerFile());
 
-        throw new Exception('Ha!');
-
         $commands = [
             "docker build -t $dockerImageName - < $dockerFileName",
             "docker run -t -v '$absoluteFileDir/:/convertfiles/' $scriptVolume $dockerImageName " . (($shellCommands) ? "sh /convertscript/script.sh " : '') . $logs,
