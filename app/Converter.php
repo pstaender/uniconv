@@ -43,7 +43,7 @@ class Converter
 
         $commands = [
             "docker build -t $dockerImageName - < $dockerFileName",
-            "docker run -t -v '$absoluteFileDir/:/convertfiles/' $scriptVolume $dockerImageName " .(($shellCommands) ? "sh /convertscript/script.sh " : ''). $logs,
+            "docker run -t -v '$absoluteFileDir/:/convertfiles/' $scriptVolume $dockerImageName " . (($shellCommands) ? "sh /convertscript/script.sh " : '') . $logs,
             "rm -rf $tmpDir",
         ];
 

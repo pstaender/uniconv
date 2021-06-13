@@ -2,4 +2,8 @@
 
 namespace App;
 
-class InvalidArgumentException extends \InvalidArgumentException {};
+class InvalidArgumentException extends \InvalidArgumentException
+{
+}
+
+;

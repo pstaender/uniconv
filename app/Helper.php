@@ -60,7 +60,7 @@ final class Helper
         } else {
             if (!file_exists('jobs/deleted')) {
                 mkdir(directory: 'jobs/deleted', recursive: true);
-      }
+            }
             if (file_exists($jobFile)) {
                 // move job file to deleted folder, i.e. soft delete
                 rename($jobFile, 'jobs/deleted/' . basename($jobFile) . '.' . time());
@@ -102,7 +102,7 @@ final class Helper
         return realpath(__DIR__ . '/../');
     }
 
-    public static function conversionShellScript(\Converter\ConverterInterface $converter, string $fromExtension, string $toExtension):? string
+    public static function conversionShellScript(\Converter\ConverterInterface $converter, string $fromExtension, string $toExtension): ?string
     {
         $sourceFile = "source.$fromExtension";
         $targetFile = "target.$toExtension";

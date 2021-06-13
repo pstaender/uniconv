@@ -11,6 +11,7 @@ final class TaskHelper
     {
         return !empty(getenv('API_BASE_URL')) ? getenv('API_BASE_URL') : 'http://localhost:8080';
     }
+
     public static function internalApiAccessToken(): string
     {
         return array_keys(\App\config()['admins']['by_accesstoken'])[0];
@@ -18,7 +19,7 @@ final class TaskHelper
 
     public static function conversionDir(): string
     {
-        $targetDir = !empty(getenv('TARGET_DIR')) ? getenv('TARGET_DIR') : __DIR__.'/../tempConversionFolder';
+        $targetDir = !empty(getenv('TARGET_DIR')) ? getenv('TARGET_DIR') : __DIR__ . '/../tempConversionFolder';
         if (!file_exists($targetDir)) {
             mkdir($targetDir, recursive: true);
         }

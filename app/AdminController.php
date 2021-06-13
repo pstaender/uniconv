@@ -12,7 +12,6 @@ use Converter\ConverterInterface;
  *
  * This controller is **only** for internal use for a dockerized converter service
  */
-
 class AdminController extends Controller
 {
     use Traits\AdminAuthenticable;
@@ -57,7 +56,7 @@ class AdminController extends Controller
             throw new MissingParameterException('File is required as multipart form');
         }
         move_uploaded_file($file['tmp_name'], $filename);
-        $this->sendJSON("Written file ".basename($filename));
+        $this->sendJSON("Written file " . basename($filename));
     }
 
     function getDockerfile()

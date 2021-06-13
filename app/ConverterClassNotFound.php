@@ -1,3 +1,6 @@
 <?php
+
 namespace App;
-class ConverterClassNotFound extends \Exception {}
+class ConverterClassNotFound extends \Exception
+{
+}
