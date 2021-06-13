@@ -44,7 +44,7 @@ class FileController extends Controller
         ob_clean();
         flush();
         readfile($file);
-        if ($data['deleteAfterDownload'] === true) {
+        if ($data['keepFilesAfterDownload'] !== true) {
             Helper::deleteConversion($this->username(), $id);
         }
         exit();

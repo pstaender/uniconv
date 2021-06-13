@@ -1,9 +1,7 @@
 version: "3.0"
 services:
   web:
-    build:
-      context: .
-      dockerfile: ./dockerfiles/Dockerfile.web
+    build: .
     ports:
       - "7979:80"
     volumes:
@@ -12,11 +10,3 @@ services:
     environment:
       PHP_INI_POST_MAX_SIZE: 120M
       PHP_INI_UPLOAD_MAX_FILESIZE: 120M
-  worker:
-    build:
-      context: .
-      dockerfile: ./dockerfiles/Dockerfile.worker
-    volumes:
-      - ./jobs:/usr/src/app/jobs
-      - ./files:/usr/src/app/files
-      - /var/run/docker.sock:/var/run/docker.sock

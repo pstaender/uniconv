@@ -128,7 +128,6 @@ const convertFile = async (
   const FormData = require("form-data");
 
   const formData = new FormData();
-  formData.append("deleteAfterDownload", "true");
   formData.append("file", fs.createReadStream(file));
   const client = axios.create({
     baseURL: baseURL,

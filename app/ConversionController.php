@@ -69,7 +69,7 @@ class ConversionController extends Controller
             'id' => $id,
             'options' => $args,
             'target' => $toExtension,
-            'deleteAfterDownload' => in_array($this->param('deleteAfterDownload'), ['true', '1'])
+            'keepFilesAfterDownload' => in_array($this->param('keepFilesAfterDownload'), ['true', '1'])
         ], JSON_PRETTY_PRINT));
 
         $this->sendJSON([

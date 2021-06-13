@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App;
 
+use Converter\ConverterInterface;
+
 /**
  * Class ExchangeController
  * @package App
@@ -11,7 +13,7 @@ namespace App;
  * This controller is **only** for internal use for a dockerized converter service
  */
 
-class ExchangeController extends Controller
+class AdminController extends Controller
 {
     use Traits\AdminAuthenticable;
 
@@ -42,7 +44,6 @@ class ExchangeController extends Controller
         return $this->sendJSON($data);
     }
 
-
     function postFiles()
     {
         $mode = $this->requirePathSegment(5, 'mode');
@@ -59,17 +60,49 @@ class ExchangeController extends Controller
         $this->sendJSON("Written file ".basename($filename));
     }
 
+    function getDockerfile()
+    {
+        echo $this->converterFromParameters()->dockerFile();
+        exit();
+    }
+
+    function getConvertShellScript()
+    {
+        [
+            'target' => $toExtension,
+            'source' => $fromExtension,
+        ] = $this->fileParameters();
+        echo Helper::conversionShellScript($this->converterFromParameters(), $fromExtension, $toExtension);
+        exit();
+    }
+
+    private function converterFromParameters(): ConverterInterface
+    {
+        [
+            'target' => $toExtension,
+            'source' => $fromExtension,
+        ] = $this->fileParameters();
+        return Converter::create(
+            fromExtension: $fromExtension,
+            toExtension: $toExtension,
+            options: []
+        );
+    }
+
     private function fileParameters(): array
     {
         $username = $this->requirePathSegment(3, 'user');
         $id = $this->requirePathSegment(4, 'id');
         $data = Helper::jobFileData($username, $id);
-        $file = realpath(__DIR__ . '/../' . $data['file']['filepath']);
+        $file = __DIR__ . '/../' . $data['file']['filepath'];
+        $file = realpath($file);
         $filename = basename($file);
+        $fromExtension = pathinfo($filename, PATHINFO_EXTENSION);
         return [
             'sourceFilename' => $filename,
             'sourceFile' => $file,
             'target' => $data['target'],
+            'source' => $fromExtension,
         ];
     }
 }

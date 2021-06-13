@@ -5,7 +5,7 @@ $controllers = [
     '/(convert|conversion)' => App\ConversionController::class,
     '/file' => App\FileController::class,
     '/job(s)*' => App\JobController::class,
-    '/exchange' => App\ExchangeController::class,
+    '/admin' => App\AdminController::class,
 ];
 
 foreach($controllers as $routePattern => $routerClass) {

@@ -101,4 +101,18 @@ final class Helper
     {
         return realpath(__DIR__ . '/../');
     }
+
+    public static function conversionShellScript(\Converter\ConverterInterface $converter, string $fromExtension, string $toExtension):? string
+    {
+        $sourceFile = "source.$fromExtension";
+        $targetFile = "target.$toExtension";
+
+        $outputFolder = '/convertfiles';
+        $source = "$outputFolder/$sourceFile";
+        $target = "$outputFolder/$targetFile";
+
+        $shellCommands = $converter->convertCommand($source, $target);
+
+        return (!empty($shellCommands)) ? "#!/bin/sh\n" . $shellCommands : null;
+    }
 }

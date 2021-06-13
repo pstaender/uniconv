@@ -6,95 +6,46 @@ namespace App;
 
 class Converter
 {
-    public static function commands(string $fileDir, string $from, string $to, \Converter\ConverterInterface $converter)
+    public static function commands(
+        string $fileDir,
+        string $from,
+        string $to,
+        \Converter\ConverterInterface $converter,
+        ?string $shellCommands = null
+    )
     {
         $dockerImageName = 'uniconv_' . preg_replace('/[^a-zA-Z0-9]+/', '_', strtolower($converter::class));
 
-        $workerIsRunningInsideDocker = file_exists(__DIR__ . '/../.running_inside_docker');
-
-        if ($workerIsRunningInsideDocker) {
-            $tmpDir = realpath(__DIR__ . '/../') . "/docker_process_" . time();
-        } else {
-            $tmpDir = sys_get_temp_dir() . "/docker_process_" . time();
-        }
+        $tmpDir = sys_get_temp_dir() . "/docker_process_" . time();
         mkdir($tmpDir . '/', recursive: true);
 
-        $scriptFileFolder = $tmpDir . '/script';
-        mkdir($scriptFileFolder, recursive: true);
+        $scriptVolume = '';
 
-        $sourceFile = "source.$from";
-        $targetFile = "target.$to";
+        if ($shellCommands) {
+            $scriptFileFolder = $tmpDir . '/script';
+            mkdir($scriptFileFolder, recursive: true);
 
+            $scriptContent = Helper::conversionShellScript($converter, $from, $to);
 
-        $outputFolder = '/convertfiles';
-        $source = "$outputFolder/$sourceFile";
-        $target = "$outputFolder/$targetFile";
-
-        $scriptContent = "#!/bin/sh\n" . $converter->convertCommand($source, $target);
-        $scriptFile = $scriptFileFolder . '/script.sh';
-        file_put_contents($scriptFile, $scriptContent);
+            $scriptFile = $scriptFileFolder . '/script.sh';
+            file_put_contents($scriptFile, $scriptContent);
+            $scriptVolume = "-v '$scriptFileFolder/:/convertscript/'";
+        }
 
         $absoluteFileDir = realpath(__DIR__ . '/../' . $fileDir);
 
         $logs = " > $absoluteFileDir/stdout.log 2> $absoluteFileDir/stderr.log";
 
-        if (!$workerIsRunningInsideDocker) {
-            // worker is running directly on the server
-            // write logs directly to the output folder
+        $dockerFileName = $absoluteFileDir . '/Dockerfile';
+        file_put_contents($dockerFileName, $converter->dockerFile());
 
-            $dockerFileName = $tmpDir . '/Dockerfile.' . $dockerImageName;
-            file_put_contents($dockerFileName, $converter->dockerFile());
+        throw new Exception('Ha!');
 
-            $commands = [
-                "docker build -t $dockerImageName - < $dockerFileName",
-                "docker run -t -v '$absoluteFileDir/:/convertfiles/' -v '$scriptFileFolder/:/convertscript/' $dockerImageName sh /convertscript/script.sh" . $logs,
-            ];
-        } else {
-            // worker is running inside a docker container
-            // write logs to local tmp dir
-            // $logs = " > $tmpDir/stdout.log 2> $tmpDir/stderr.log";
-            $dockerFileName = "$absoluteFileDir/Dockerfile.$dockerImageName";
-            $dockerFileContent = $converter->dockerFile();
-            $targetDir = '/convertfiles';
-            $jobFile = "$targetDir/job.json";
-
-            $appendFileOperation = [
-                "ENV TARGET_DIR=$targetDir",
-                "ENV SCRIPT_DIR=/convertscript",
-                "RUN mkdir \$TARGET_DIR",
-                "RUN mkdir \$SCRIPT_DIR",
-                "COPY $scriptFile \$SCRIPT_DIR/script.sh",
-                "RUN cat \$SCRIPT_DIR/script.sh",
-                "RUN php tasks/download_job_file.php \$JOB_USER \$JOB_ID \$TARGET_DIR/job.json",
-                "RUN php tasks/download_source_file.php \$TARGET_DIR/job.json",
-                "RUN sh \$SCRIPT_DIR/script.sh",
-                "RUN php tasks/upload_target_file.php $jobFile $targetDir/$targetFile",
-                // php tasks/upload_target_file.php jobs/philipp.7e34fb4462a147ae387235ab641a08c4d30ed566.json tempConversionFolder/test.flac
-            ];
-            $dockerFileContent .= implode("\n", $appendFileOperation);
-
-            file_put_contents($dockerFileName, $dockerFileContent);
-
-            echo $dockerFileContent;
-
-            $commands = [
-                // "cp $absoluteFileDir/$sourceFile $tmpDir/$sourceFile",
-                // "cp $scriptFile $tmpDir/script.sh",
-                // "ls -al $tmpDir/",
-//                "ls -al $absoluteFileDir/",
-//                "cat $dockerFileName",
-                "docker build -t $dockerImageName - < $dockerFileName",
-//                "docker run -t -v '$tmpDir/:/convertfiles/' $dockerImageName ls -al /",
-//                "docker run -t -v '$tmpDir/:/convertfiles/' $dockerImageName ls -al /convertfiles/",
-                "docker run -t $dockerImageName " . $logs,
-//                "rm $absoluteFileDir/script.sh",
-//                "cp $tmpDir/* /convertfiles/",
-//                "rm -rf $tmpDir",
-            ];
-        }
-
-        // cleanup tmp dir
-        $commands[] = "rm -rf $tmpDir";
+        $commands = [
+            "docker build -t $dockerImageName - < $dockerFileName",
+            "docker run -t -v '$absoluteFileDir/:/convertfiles/' $scriptVolume $dockerImageName " .(($shellCommands) ? "sh /convertscript/script.sh " : ''). $logs,
+            "rm -rf $tmpDir",
+        ];
 
         return $commands;
     }
