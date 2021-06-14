@@ -3,9 +3,9 @@
 
 declare(strict_types=1);
 
-namespace Converter;
+namespace Uniconv;
 
-class Mp4ToFlac extends FFMpegConverter
+class WebmToWav extends FFMpegConverter
 {
 }
 

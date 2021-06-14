@@ -10,7 +10,7 @@ global $debug;
 function is_debug(): bool
 {
     global $debug;
-    return (bool) $debug;
+    return (bool)$debug;
 }
 
 // load config files
@@ -19,9 +19,9 @@ global $config;
 $config = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('./config/config.yml'));
 
 $localConfig = "./config/config.local.yml";
-$hostConfig = "./config/config.".preg_replace('/\:.+?$/', '', $_SERVER['HTTP_HOST'] ?? 'cli').'.yml';
+$hostConfig = "./config/config." . preg_replace('/\:.+?$/', '', $_SERVER['HTTP_HOST'] ?? 'cli') . '.yml';
 
-foreach([$localConfig, $hostConfig] as $configFile) {
+foreach ([$localConfig, $hostConfig] as $configFile) {
     if (file_exists($configFile)) {
         $config = array_merge(
             $config,
@@ -30,7 +30,8 @@ foreach([$localConfig, $hostConfig] as $configFile) {
     }
 }
 
-function config(? string $val = null) {
+function config(?string $val = null)
+{
     global $config;
     if ($val) {
         return $config[$val] ?? null;
@@ -48,8 +49,14 @@ if (is_debug()) {
     $whoops = new \Whoops\Run;
     if (str_contains(strtolower($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json')) {
         $whoops->pushHandler(new \Whoops\Handler\JsonResponseHandler);
-    } else {
+    } elseif(php_sapi_name() === 'cli') {
+        $whoops->pushHandler(new \Whoops\Handler\PlainTextHandler);
+    }else {
         $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
     }
     $whoops->register();
+}
+
+if (file_exists(__DIR__ . '/config.local.php')) {
+    require_once __DIR__ . '/config.local.php';
 }

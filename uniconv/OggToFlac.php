@@ -3,9 +3,9 @@
 
 declare(strict_types=1);
 
-namespace Converter;
+namespace Uniconv;
 
-class Mp4ToMp3 extends Mp3FFMpegConverter
+class OggToFlac extends FFMpegConverter
 {
 }
 

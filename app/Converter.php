@@ -10,42 +10,29 @@ class Converter
         string $fileDir,
         string $from,
         string $to,
-        \Converter\ConverterInterface $converter,
+        \Uniconv\ConverterInterface $converter,
         ?string $shellCommands = null
     )
     {
         $dockerImageName = 'uniconv_' . preg_replace('/[^a-zA-Z0-9]+/', '_', strtolower($converter::class));
 
-        $tmpDir = sys_get_temp_dir() . "/docker_process_" . time();
-        mkdir($tmpDir . '/', recursive: true);
-
-        $scriptVolume = '';
+        $absoluteFileDir = realpath(__DIR__ . '/../' . $fileDir);
 
         if ($shellCommands) {
-            $scriptFileFolder = $tmpDir . '/script';
-            mkdir($scriptFileFolder, recursive: true);
-
             $scriptContent = Helper::conversionShellScript($converter, $from, $to);
-
-            $scriptFile = $scriptFileFolder . '/script.sh';
+            $scriptFile = $absoluteFileDir . '/script.sh';
             file_put_contents($scriptFile, $scriptContent);
-            $scriptVolume = "-v '$scriptFileFolder/:/convertscript/'";
         }
-
-        $absoluteFileDir = realpath(__DIR__ . '/../' . $fileDir);
 
         $logs = " > $absoluteFileDir/stdout.log 2> $absoluteFileDir/stderr.log";
 
         $dockerFileName = $absoluteFileDir . '/Dockerfile';
         file_put_contents($dockerFileName, $converter->dockerFile());
 
-        $commands = [
+        return [
             "docker build -t $dockerImageName - < $dockerFileName",
-            "docker run -t -v '$absoluteFileDir/:/convertfiles/' $scriptVolume $dockerImageName " . (($shellCommands) ? "sh /convertscript/script.sh " : '') . $logs,
-            "rm -rf $tmpDir",
+            "docker run -t -v '$absoluteFileDir/:/convertfiles/' $dockerImageName " . (($shellCommands) ? "sh /convertfiles/script.sh " : '') . $logs,
         ];
-
-        return $commands;
     }
 
     public static function createFromRequestParameters(string $fromExtension, string $toExtension, Controller $controller)
@@ -88,13 +75,14 @@ class Converter
     private static function converterClassName(string $fromExtension, string $toExtension): string
     {
         $baseNamespaces = [
-            '\\Converter\\',
+            'Uniconv\\',
         ];
         $baseNamespaces = array_merge(config()['converterNamespaces'], $baseNamespaces);
+
         foreach ($baseNamespaces as $baseNamespace) {
             $converterClass = implode('', [
-                $baseNamespace,
-                ucfirst(strtolower($fromExtension)),
+                '\\' . $baseNamespace,
+                (is_numeric($fromExtension[0])) ? 'Converter' . ucfirst(strtolower($fromExtension)) : ucfirst(strtolower($fromExtension)),
                 'To',
                 ucfirst(strtolower($toExtension)),
             ]);

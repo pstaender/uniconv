@@ -1,6 +1,6 @@
 <?php
 
-namespace Converter;
+namespace Uniconv;
 
 class TesseractConverter implements ConverterInterface
 {

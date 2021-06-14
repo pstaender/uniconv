@@ -43,12 +43,18 @@ $workerPool->setWorkerPoolSize(4)
                         options: $data['options']
                     );
 
+                    $shellScriptCommands = App\Helper::conversionShellScript($converter, $fromExtension, $toExtension);
+
+                    // this chmod 777 is a poor workaround for dockers permission problems...
+                    // otherwise containers using a user (gid 1000 for example) will run into permission problems
+                    shell_exec("chmod -R 777 '".realpath(App\Helper::conversionFolder($data['user'], $data['id']))."'");
+
                     $commands = App\Converter::commands(
                         App\Helper::conversionFolder($data['user'], $data['id']),
                         $fromExtension,
                         $toExtension,
                         $converter,
-                        App\Helper::conversionShellScript($converter, $fromExtension, $toExtension)
+                        $shellScriptCommands
                     );
 
                     foreach ($commands as $cmd) {

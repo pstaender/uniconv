@@ -3,9 +3,9 @@
 
 declare(strict_types=1);
 
-namespace Converter;
+namespace Uniconv;
 
-class WebmToFlac extends FFMpegConverter
+class MkvToWav extends FFMpegConverter
 {
 }
 

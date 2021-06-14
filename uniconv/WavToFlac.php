@@ -3,9 +3,9 @@
 
 declare(strict_types=1);
 
-namespace Converter;
+namespace Uniconv;
 
-class MkvToMp3 extends Mp3FFMpegConverter
+class WavToFlac extends FFMpegConverter
 {
 }
 

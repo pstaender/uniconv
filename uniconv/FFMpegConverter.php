@@ -1,14 +1,13 @@
 <?php
 
-namespace Converter;
+namespace Uniconv;
 
 class FFMpegConverter implements ConverterInterface
 {
 
     public function convertCommand(string $sourceFile, string $targetFile): ?string
     {
-        $cmd = "ffmpeg -i $sourceFile $targetFile";
-        return $cmd;
+        return "ffmpeg -i $sourceFile $targetFile";
     }
 
     public function dockerFile(): ?string
@@ -20,9 +19,4 @@ class FFMpegConverter implements ConverterInterface
     {
         return false;
     }
-
-//    protected function mp3AudioQuality()
-//    {
-//        return '192k';
-//    }
 }

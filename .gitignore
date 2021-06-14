@@ -2,3 +2,4 @@
 /jobs/*
 /vendor/*
 /config/config.local.yml
+/config/config.local.php

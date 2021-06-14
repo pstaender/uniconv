@@ -102,7 +102,7 @@ final class Helper
         return realpath(__DIR__ . '/../');
     }
 
-    public static function conversionShellScript(\Converter\ConverterInterface $converter, string $fromExtension, string $toExtension): ?string
+    public static function conversionShellScript(\Uniconv\ConverterInterface $converter, string $fromExtension, string $toExtension): ?string
     {
         $sourceFile = "source.$fromExtension";
         $targetFile = "target.$toExtension";

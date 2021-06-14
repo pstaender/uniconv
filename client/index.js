@@ -78,8 +78,10 @@ const showHelp = () => {
   console.log(commandLineUsage(sections));
 };
 
+const displayErrorMessage = (msg) => log(`Error: ${msg}`, "❌", "console.error");
+
 const displayErrorMessageAndExit = (msg) => {
-  log(`Error: ${msg}`, "❌", "console.error");
+  displayErrorMessage(msg);
   process.exit(1);
 };
 
@@ -100,6 +102,39 @@ if (!accessToken) {
     `No accesstoken provided. Set via env with name CONVERTER_ACCESSTOKEN`
   );
 }
+
+const handleError = (e, exitAfter) => {
+  let msg = e.message;
+  let userFriendlyErrorMessage = null;
+  if (e.response && e.response.data && e.response.data.error) {
+    userFriendlyErrorMessage = e.response.data.error;
+  }
+  let errorMessage = msg;
+
+  if (verbosity > 0) {
+    if (verbosity > 1) {
+      console.error(e);
+    }
+    if (userFriendlyErrorMessage) {
+      msg += ": " + userFriendlyErrorMessage;
+    }
+
+    if (e.response && e.response.data) {
+      console.error(e.response.data);
+    }
+
+    errorMessage = msg || e.message;
+  } else {
+    errorMessage = userFriendlyErrorMessage || msg;
+  }
+  if (exitAfter) {
+    displayErrorMessageAndExit(errorMessage);
+  } else {
+    displayErrorMessage(errorMessage);
+  }
+}
+
+const fileSizeInMB = (file) => Math.floor((fs.statSync(file).size / 1024 / 1024) * 100) / 100
 
 const convertFile = async (
   baseURL,
@@ -128,7 +163,7 @@ const convertFile = async (
   const FormData = require("form-data");
 
   const formData = new FormData();
-  const fileSize = Math.ceil((fs.statSync(file).size / 1024 / 1024) * 100)/100 + 'MB';
+  const fileSize = `${fileSizeInMB(file)}MB`;
 
   formData.append("file", fs.createReadStream(file));
   const client = axios.create({
@@ -141,10 +176,11 @@ const convertFile = async (
     maxBodyLength: Infinity,
   });
   let statusUrl = null;
+  let uploadRes = null;
 
   try {
     log(`Uploading file '${file}' (size ${fileSize})`, "⏫");
-    let uploadRes = await client.post(`convert/${targetFormat}`, formData, {
+    uploadRes = await client.post(`convert/${targetFormat}`, formData, {
       headers: formData.getHeaders(),
     });
     statusUrl = uploadRes.data.status_url;
@@ -161,8 +197,21 @@ const convertFile = async (
     }
   }
 
+  
+
   const checkForConversionStatusAndDownloadIfConverted = async () => {
-    let res = await client.get(statusUrl);
+    let res = null;
+    try {
+      res = await client.get(statusUrl);
+    } catch (e) {
+      handleError(e, false);
+    }
+    if (!res || !statusUrl) {
+      if (res && res.data) {
+        console.error(res.data);
+      }
+      displayErrorMessageAndExit('Could not start conversion: res or statusUrl are missing... maybe there is something wrong with the api service?');
+    }
     if (res.data.status && res.data.status !== lastDisplayedStatus) {
       lastDisplayedStatus = res.data.status;
       console.log("");
@@ -191,7 +240,6 @@ const convertFile = async (
         throw new Error("To be implemented");
       } else {
         await downloadFile(client, downloadUrl, targetFile);
-        console.log("");
         log(`Downloaded to -> ${targetFile}`, "🦄");
       }
     }
@@ -221,26 +269,6 @@ const convertFile = async (
     }
     await convertFile(baseURL, accessToken, targetFormat, file, targetFile);
   } catch (e) {
-    let msg = e.message;
-    let userFriendlyErrorMessage = null;
-    if (e.response && e.response.data && e.response.data.error) {
-      userFriendlyErrorMessage = e.response.data.error;
-    }
-    if (verbosity > 0) {
-      if (verbosity > 1) {
-        console.error(e);
-      }
-      if (userFriendlyErrorMessage) {
-        msg += ": " + userFriendlyErrorMessage;
-      }
-
-      if (e.response && e.response.data) {
-        console.error(e.response.data);
-      }
-
-      displayErrorMessageAndExit(msg || e.message);
-    } else {
-      displayErrorMessageAndExit(userFriendlyErrorMessage || msg);
-    }
+    handleError(e, true);
   }
 })();

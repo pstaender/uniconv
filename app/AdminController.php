@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
-use Converter\ConverterInterface;
+use Uniconv\ConverterInterface;
 
 /**
  * Class ExchangeController
