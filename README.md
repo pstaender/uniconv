@@ -13,6 +13,7 @@ The service converts a file to other formats… as long as they are defined. You
   - mkv -> flac
   - mp3 -> flac
   - wav -> flac
+  
 - via tesseract
   - jpg -> pdf
 

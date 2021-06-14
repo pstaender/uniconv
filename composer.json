@@ -12,6 +12,12 @@
     ],
     "convert": [
       "@php convert_jobs.php"
+    ],
+    "createMp3Converters": [
+      "@php scripts/create_converter.php webm,ogg,mp4,mkv,flac mp3 Mp3FFMpegConverter ./converter Converter"
+    ],
+    "createFlacConverters": [
+      "@php scripts/create_converter.php webm,ogg,mp4,mkv,flac flac FFMpegConverter ./converter Converter"
     ]
   },
   "autoload": {
@@ -26,6 +32,7 @@
     "qxsch/worker-pool": "^1.7",
     "fileeye/mimemap": "^1.1",
     "filp/whoops": "^2.13",
-    "symfony/yaml": "^5.3"
+    "symfony/yaml": "^5.3",
+    "clue/commander": "^1.4"
   }
 }

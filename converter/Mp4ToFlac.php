@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Converter;
 
-class Mp4ToMp3 extends Mp3FFMpegConverter
+class Mp4ToFlac extends FFMpegConverter
 {
 }
 

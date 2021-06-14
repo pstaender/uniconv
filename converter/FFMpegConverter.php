@@ -21,8 +21,8 @@ class FFMpegConverter implements ConverterInterface
         return false;
     }
 
-    protected function mp3AudioQuality()
-    {
-        return '192k';
-    }
+//    protected function mp3AudioQuality()
+//    {
+//        return '192k';
+//    }
 }

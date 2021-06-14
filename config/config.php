@@ -46,6 +46,10 @@ if (is_debug()) {
     error_reporting(E_ALL);
 
     $whoops = new \Whoops\Run;
-    $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+    if (str_contains(strtolower($_SERVER['HTTP_ACCEPT'] ?? ''), 'application/json')) {
+        $whoops->pushHandler(new \Whoops\Handler\JsonResponseHandler);
+    } else {
+        $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+    }
     $whoops->register();
 }
