@@ -12,8 +12,8 @@ const options = commandLineArgs(
   { stopAtFirstUnknown: true }
 );
 
-const accessToken = process.env["CONVERTER_ACCESSTOKEN"];
-const baseURL = process.env["CONVERTER_BASEURL"] || "http://127.0.0.1:8080";
+const accessToken = process.env["UNICONV_ACCESSTOKEN"];
+const baseURL = process.env["UNICONV_BASEURL"] || "http://127.0.0.1:8080";
 
 const argv = options._unknown || [];
 const verbosity = options.verbose ? 1 : options.vv ? 2 : 0;
@@ -26,7 +26,7 @@ const log = (msg, icon = "➡️", writer = null) => {
   let output =
     (icon || "") +
     "\t" +
-    new Date().toLocaleTimeString(process.env.LANG) +
+    new Date().toLocaleTimeString(Intl.DateTimeFormat().resolvedOptions().locale) +
     ": " +
     msg;
   if (writer === null) {
@@ -128,16 +128,22 @@ const convertFile = async (
   const FormData = require("form-data");
 
   const formData = new FormData();
+  const fileSize = Math.ceil((fs.statSync(file).size / 1024 / 1024) * 100)/100 + 'MB';
+
   formData.append("file", fs.createReadStream(file));
   const client = axios.create({
     baseURL: baseURL,
-    headers: { Authorization: `Bearer ${accessToken}` },
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Accept: `application/json,text/*;q=0.99`,
+    },
     maxContentLength: Infinity,
     maxBodyLength: Infinity,
   });
   let statusUrl = null;
 
   try {
+    log(`Uploading file '${file}' (size ${fileSize})`, "⏫");
     let uploadRes = await client.post(`convert/${targetFormat}`, formData, {
       headers: formData.getHeaders(),
     });
@@ -226,6 +232,10 @@ const convertFile = async (
       }
       if (userFriendlyErrorMessage) {
         msg += ": " + userFriendlyErrorMessage;
+      }
+
+      if (e.response && e.response.data) {
+        console.error(e.response.data);
       }
 
       displayErrorMessageAndExit(msg || e.message);
