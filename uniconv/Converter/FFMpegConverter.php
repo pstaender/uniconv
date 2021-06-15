@@ -1,6 +1,10 @@
 <?php
 
-namespace Uniconv;
+declare(strict_types=1);
+
+namespace Uniconv\Converter;
+
+use Uniconv\ConverterInterface;
 
 class FFMpegConverter implements ConverterInterface
 {

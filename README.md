@@ -23,6 +23,7 @@ The service converts a file to other formats… as long as they are defined. You
 - source and target format conversion are defined in a class and can be therefore extended with custom converters, e.g.:
   - mp4 to mp3 will look for a class called `Mp4ToMp3` having a `ConverterInterface` (see converter/ConverterInterface.php)
 - no database required (is that a feature?)
+- extendable with your custom converters
 
 ### Requirements
 
@@ -52,6 +53,23 @@ users:
 ```
 
 You can now use the accestoken in the header like: `Authorization: Bearer 933704aabab8314e7cd2385428591eda737fecec`
+
+### Add custom converters
+
+Create `config/config.local.yml` and add your converter namespace(s):
+
+```yaml
+converterNamespaces:
+  - MyNamespace\MyConverters\
+```
+
+Create `config/condif.local.php` and register them with the autoloader:
+
+```php
+<?php
+$loader = require ROOT_PATH . '/vendor/autoload.php';
+$loader->setPsr4("MyNamespace\\", "/wherever/my_namespace_is");
+```
 
 ### Uniconv client FTW
 

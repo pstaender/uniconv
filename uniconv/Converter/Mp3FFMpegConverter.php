@@ -1,8 +1,13 @@
 <?php
 
-namespace Uniconv;
+declare(strict_types=1);
 
-class Mp3FFMpegConverter extends FFMpegConverter {
+namespace Uniconv\Converter;
+
+use Uniconv\ConverterInterface;
+
+class Mp3FFMpegConverter extends FFMpegConverter
+{
     public function convertCommand(string $sourceFile, string $targetFile): ?string
     {
         $quality = '-b:a ' . $this->mp3AudioQuality();

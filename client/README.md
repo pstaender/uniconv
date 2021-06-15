@@ -1,5 +1,7 @@
 # Uniconv client
 
+The client requires a running [uniconv webserver](https://github.com/pstaender/uniconv).
+
 ## Install
 
     $ npm install -g uniconv

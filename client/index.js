@@ -240,7 +240,7 @@ const convertFile = async (
         throw new Error("To be implemented");
       } else {
         await downloadFile(client, downloadUrl, targetFile);
-        log(`Downloaded to -> ${targetFile}`, "🦄");
+        log(`Downloaded to -> ${targetFile}`, `\n🦄`);
       }
     }
   }

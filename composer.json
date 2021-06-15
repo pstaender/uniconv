@@ -14,16 +14,16 @@
       "@php convert_jobs.php"
     ],
     "createMp3Converters": [
-      "@php scripts/create_converter.php wav,webm,ogg,mp4,mkv,flac mp3 Mp3FFMpegConverter ./Uniconv Uniconv"
+      "@php scripts/create_converter.php wav,webm,ogg,mp4,mkv,flac mp3 Mp3FFMpegConverter ./uniconv/Converter 'Uniconv\\Converter'"
     ],
     "createMp4Converters": [
-      "@php scripts/create_converter.php webm,mkv mp4 FFMpegConverter ./Uniconv Uniconv"
+      "@php scripts/create_converter.php webm,mkv mp4 FFMpegConverter ./uniconv/Converter 'Uniconv\\Converter'"
     ],
     "createFlacConverters": [
-      "@php scripts/create_converter.php wav,webm,mp3,ogg,mp4,mkv flac FFMpegConverter ./Uniconv Uniconv"
+      "@php scripts/create_converter.php wav,webm,mp3,ogg,mp4,mkv flac FFMpegConverter ./uniconv/Converter 'Uniconv\\Converter'"
     ],
     "createWavConverters": [
-      "@php scripts/create_converter.php webm,mp3,ogg,mp4,mkv,flac wav FFMpegConverter ./Uniconv Uniconv"
+      "@php scripts/create_converter.php webm,mp3,ogg,mp4,mkv,flac wav FFMpegConverter ./uniconv/Converter 'Uniconv\\Converter'"
     ]
   },
   "autoload": {
