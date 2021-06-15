@@ -88,7 +88,7 @@ const displayErrorMessageAndExit = (msg) => {
 };
 
 const file = argv[0];
-const { targetFormat } = options;
+const targetFormat = options.targetFormat.toLowerCase();
 
 if (!targetFormat || !file) {
   showHelp();
@@ -211,7 +211,7 @@ const convertFile = async (
     }
   }
 
-  
+
 
   const checkForConversionStatusAndDownloadIfConverted = async () => {
     let res = null;
@@ -276,10 +276,15 @@ const convertFile = async (
         .basename(file)
         .replace(/\.([^\.]+?)$/, "") +
       "." +
-      targetFormat.toLowerCase();
+      targetFormat;
     if (fs.existsSync(targetFile)) {
-      console.log(`File '${targetFile}' already exists`);
-      process.exit(1);
+      if (targetFile.endsWith(`.${targetFormat}`)) {
+        // source and target are the same
+        targetFile = targetFile.replace(new RegExp(`\\.${targetFormat}$`), '.' + (new Date().getTime()) + '.' + targetFormat.toLowerCase());
+        } else {
+        console.log(`File '${targetFile}' already exists`);
+        process.exit(1);
+      }
     }
     await convertFile(baseURL, accessToken, targetFormat, file, targetFile);
   } catch (e) {

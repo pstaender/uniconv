@@ -6,3 +6,4 @@ baseConverterNamespaces:
   - Uniconv\Converter\FFMpeg\
   - Uniconv\Converter\Tesseract\
   - Uniconv\Converter\Webp\
+  - Uniconv\Converter\Guetzli\

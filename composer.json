@@ -25,6 +25,10 @@
     ],
     "createWebpConverters": [
       "@php scripts/create_converter.php jpg,png webp WebpConverter ./uniconv/Converter/Webp 'Uniconv\\Converter\\Webp'"
+    ],
+    "createGuetzliConverters": [
+      "@php scripts/create_converter.php jpg,png jpg GuetzliConverter ./uniconv/Converter/Guetzli 'Uniconv\\Converter\\Guetzli'",
+      "@php scripts/create_converter.php jpg,png png GuetzliConverter ./uniconv/Converter/Guetzli 'Uniconv\\Converter\\Guetzli'"
     ]
   },
   "autoload": {
