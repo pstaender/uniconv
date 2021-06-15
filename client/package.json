@@ -1,6 +1,6 @@
 {
   "name": "uniconv",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "uniconv is a cli tool to convert different file formats using a uniconv server",
   "main": "index.js",
   "scripts": {

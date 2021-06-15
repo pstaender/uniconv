@@ -74,10 +74,7 @@ class Converter
 
     private static function converterClassName(string $fromExtension, string $toExtension): string
     {
-        $baseNamespaces = [
-            'Uniconv\\Converter\\',
-        ];
-        $baseNamespaces = array_merge(config()['converterNamespaces'], $baseNamespaces);
+        $baseNamespaces = array_merge(config()['converterNamespaces'], config('baseConverterNamespaces'));
 
         foreach ($baseNamespaces as $baseNamespace) {
             $converterClass = implode('', [

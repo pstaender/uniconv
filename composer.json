@@ -7,23 +7,24 @@
     }
   ],
   "scripts": {
-    "start": [
+    "server": [
       "@php -S 127.0.0.1:8080 index.php"
     ],
     "convert": [
       "@php convert_jobs.php"
     ],
-    "createMp3Converters": [
-      "@php scripts/create_converter.php wav,webm,ogg,mp4,mkv,flac mp3 Mp3FFMpegConverter ./uniconv/Converter 'Uniconv\\Converter'"
+    "createFFMpegConverters": [
+      "@php scripts/create_converter.php wav,webm,ogg,mp4,mkv,flac mp3 Mp3FFMpegConverter ./uniconv/Converter/FFMpeg 'Uniconv\\Converter\\FFMpeg'",
+      "@php scripts/create_converter.php webm,mkv mp4 FFMpegConverter ./uniconv/Converter/FFMpeg 'Uniconv\\Converter\\FFMpeg'",
+      "@php scripts/create_converter.php wav,webm,mp3,ogg,mp4,mkv flac FFMpegConverter ./uniconv/Converter/FFMpeg 'Uniconv\\Converter\\FFMpeg'",
+      "@php scripts/create_converter.php webm,mp3,ogg,mp4,mkv,flac wav FFMpegConverter ./uniconv/Converter/FFMpeg 'Uniconv\\Converter\\FFMpeg'"
     ],
-    "createMp4Converters": [
-      "@php scripts/create_converter.php webm,mkv mp4 FFMpegConverter ./uniconv/Converter 'Uniconv\\Converter'"
+    "createTesseractConverters": [
+      "@php scripts/create_converter.php pdf,jpg,png pdf TesseractConverter ./uniconv/Converter/Tesseract 'Uniconv\\Converter\\Tesseract'",
+      "@php scripts/create_converter.php pdf,jpg,png txt TesseractConverter ./uniconv/Converter/Tesseract 'Uniconv\\Converter\\Tesseract'"
     ],
-    "createFlacConverters": [
-      "@php scripts/create_converter.php wav,webm,mp3,ogg,mp4,mkv flac FFMpegConverter ./uniconv/Converter 'Uniconv\\Converter'"
-    ],
-    "createWavConverters": [
-      "@php scripts/create_converter.php webm,mp3,ogg,mp4,mkv,flac wav FFMpegConverter ./uniconv/Converter 'Uniconv\\Converter'"
+    "createWebpConverters": [
+      "@php scripts/create_converter.php jpg,png webp WebpConverter ./uniconv/Converter/Webp 'Uniconv\\Converter\\Webp'"
     ]
   },
   "autoload": {

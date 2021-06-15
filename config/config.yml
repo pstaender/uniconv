@@ -1,3 +1,8 @@
 user_by_authtoken: \App\Users::by_accesstoken
 admin_by_accesstoken: \App\Admins::by_accesstoken
 debug: false
+baseConverterNamespaces:
+  - Uniconv\Converter\
+  - Uniconv\Converter\FFMpeg\
+  - Uniconv\Converter\Tesseract\
+  - Uniconv\Converter\Webp\

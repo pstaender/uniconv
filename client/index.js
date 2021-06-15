@@ -22,7 +22,7 @@ const packageJson = require('./package.json');
 
 console.log(`uniconv v${packageJson.version}`);
 
-const log = (msg, icon = "➡️", writer = null) => {
+const log = (msg, icon = '🔔', writer = null) => {
   let output =
     (icon || "") +
     "\t" +
@@ -33,6 +33,8 @@ const log = (msg, icon = "➡️", writer = null) => {
     console.log(output);
   } else if (writer === "console.error") {
     console.error(output);
+  } else if (writer === "console.debug") {
+    console.debug(output);
   } else if (writer === "process.stdout.write") {
     process.stdout.write(output);
   }
@@ -178,6 +180,17 @@ const convertFile = async (
   let statusUrl = null;
   let uploadRes = null;
 
+  if (verbosity > 1) {
+    client.interceptors.request.use(request => {
+      log(`${request.method.toUpperCase()}:\t${request.url}`, '➡️', 'console.debug')
+      return request
+    })
+    client.interceptors.response.use(response => {
+      log(`${response.status}:\t${JSON.stringify(response.data)}`, '⬅️', 'console.debug')
+      return response
+    })
+  }
+
   try {
     log(`Uploading file '${file}' (size ${fileSize})`, "⏫");
     uploadRes = await client.post(`convert/${targetFormat}`, formData, {
@@ -190,6 +203,7 @@ const convertFile = async (
       e.response.data &&
       e.response.data.response_code === 409
     ) {
+      log(`File already uploaded. Trying now to download file`)
       statusUrl = e.response.data.status_url;
     }
     if (!statusUrl) {
